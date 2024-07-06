@@ -10,6 +10,7 @@ namespace InteractivePresentation.Domain.Repository.Abstract
         Task<IEnumerable<Poll>> GetPollsAsync(Guid presentationId);
         Task<Poll> GetCurrentPollAsync(Guid presentationId);
         Task CreatePollAsync(Poll poll);
+        Task SetCurrentPollAsync(Guid presentationId, Poll poll);
         Task UpdatePollAsync(Poll poll);
         Task<Poll> GetPollByIdAsync(Guid pollId);
     }

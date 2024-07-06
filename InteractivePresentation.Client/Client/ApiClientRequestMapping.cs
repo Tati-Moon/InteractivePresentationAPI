@@ -4,16 +4,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Web;
 
 namespace InteractivePresentation.Client.Client
 {
     internal static class ApiClientRequestMapping
     {
-        private const string ContentTypeFormUrlEncoded = "application/x-www-form-urlencoded";
-        private const string KeyPair = "&";
-        private const string KeyValue = "=";
+        private const string ContentTypeFormUrlEncoded = "application/json";
 
         public static HttpRequestMessage ToGet<T>(this ApiClientRequest<T> apiClientRequest)
             where T : class
@@ -44,9 +42,7 @@ namespace InteractivePresentation.Client.Client
         private static string ToQueryString<TEntity>(TEntity entity)
             where TEntity : class
         {
-            var queryPairs = ToDictionary(entity).Select(x => $"{HttpUtility.UrlEncode(x.Key)}{KeyValue}{HttpUtility.UrlEncode(x.Value)}");
-
-            return string.Join(KeyPair, queryPairs);
+            return JsonSerializer.Serialize(entity);
         }
 
         private static IDictionary<string, string> ToDictionary<TEntity>(TEntity data)

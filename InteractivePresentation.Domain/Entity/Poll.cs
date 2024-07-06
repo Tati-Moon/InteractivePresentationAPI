@@ -18,5 +18,6 @@ namespace InteractivePresentation.Domain.Entity
         public List<Option> Options { get; set; }
         [JsonPropertyName("presentation_id")]
         public Guid PresentationId { get; set; }
+        public bool IsCurrent { get; set; } = true;
     }
 }

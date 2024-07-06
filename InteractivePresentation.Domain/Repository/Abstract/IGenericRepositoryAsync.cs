@@ -14,5 +14,6 @@ namespace InteractivePresentation.Domain.Repository.Abstract
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(TKey id);
+        Task SaveChangesAsync();
     }
 }

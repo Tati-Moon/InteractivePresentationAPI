@@ -47,6 +47,9 @@ namespace Api.Migrations
                         .HasColumnName("PollId")
                         .HasAnnotation("Relational:JsonPropertyName", "poll_id");
 
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("INTEGER");
+
                     b.Property<Guid>("PresentationId")
                         .HasColumnType("TEXT")
                         .HasAnnotation("Relational:JsonPropertyName", "presentation_id");

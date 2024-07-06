@@ -42,13 +42,14 @@ namespace Api.Migrations
                 name: "Option",
                 columns: table => new
                 {
-                    Key = table.Column<string>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", nullable: true),
                     Value = table.Column<string>(type: "TEXT", nullable: true),
                     PollId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Option", x => x.Key);
+                    table.PrimaryKey("PK_Option", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Option_Polls_PollId",
                         column: x => x.PollId,

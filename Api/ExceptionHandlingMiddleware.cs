@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System;
 using InteractivePresentation.Client;
+using InteractivePresentation.Domain.Exceptions;
 
 namespace Api
 {
@@ -28,10 +29,27 @@ namespace Api
                 await HandleExceptionsAsync(
                     httpContext,
                     ex.Message,
-                    ex.ResponseStatusCode ?? HttpStatusCode.BadRequest,
+                    ex.ResponseStatusCode ?? HttpStatusCode.NotFound,
                     ex.Message
                 );
-
+            }
+            catch (ArgumentNullException ex)
+            {
+                await HandleExceptionsAsync(
+                    httpContext,
+                    ex.Message,
+                    HttpStatusCode.BadRequest,
+                    ex.Message
+                );
+            }
+            catch (BeginTransactionException ex)
+            {
+                await HandleExceptionsAsync(
+                    httpContext,
+                    ex.Message,
+                    HttpStatusCode.InternalServerError,
+                    ex.Message
+                );
             }
             catch (Exception ex)
             {

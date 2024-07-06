@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240702003212_UpdateOptionsModel")]
-    partial class UpdateOptionsModel
+    [Migration("20240705215648_InitialCreate2")]
+    partial class InitialCreate2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,9 @@ namespace Api.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("PollId")
                         .HasAnnotation("Relational:JsonPropertyName", "poll_id");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("PresentationId")
                         .HasColumnType("TEXT")

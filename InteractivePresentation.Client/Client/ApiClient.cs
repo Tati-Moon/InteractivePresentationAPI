@@ -34,13 +34,17 @@ namespace InteractivePresentation.Client.Client
 
             try
             {
-                using HttpResponseMessage responseMessage = await _httpClient.SendAsync(httpRequestMessage);
+                using var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
 
                 return await responseMessage.ToApiClientResponseAsync<TResponse>();
             }
             catch (Exception exception) when (exception is not UnsuccessfulResponseException)
             {
                 throw new UnsuccessfulResponseException("Low-level HTTP request failure", exception);
+            }
+            catch (Exception exception) when (exception is UnsuccessfulResponseException)
+            {
+                throw;
             }
         }
     }

@@ -7,6 +7,7 @@ namespace InteractivePresentation.Client.Service.Abstract
     public interface IPresentationClientService
     {
         Task<PresentationResponse> GetAsync(Guid presentationId);
-        Task<PresentationResponse> PostAsync(PresentationRequest request);
+        Task<PollResponseModel> GetCurrentAsync(Guid presentationId);
+        Task<PresentationResponseModel> PostAsync(PresentationRequest request);
     }
 }

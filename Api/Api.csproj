@@ -22,4 +22,8 @@
     <ProjectReference Include="..\InteractivePresentation.Domain\InteractivePresentation.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
 </Project>

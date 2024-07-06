@@ -46,6 +46,11 @@ namespace InteractivePresentation.Domain.Repository
             _context.Set<T>().Remove(entityToDelete);
             await _context.SaveChangesAsync();
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }
 

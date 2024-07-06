@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using InteractivePresentation.Client.Service.Abstract;
 using InteractivePresentation.Domain.Entity;
 using InteractivePresentation.Domain.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Route("api/presentations/{presentation_id}/polls")]
+    [Route("api/presentations/{presentation_id:guid}/polls/current")]
     [ApiController]
-    public class PollsController(IPollService pollService) : ControllerBase
+    public class PollsController(IPresentationClientService clientService, IPollService pollService) : ControllerBase
     {
-        [HttpGet("current")]
+        [HttpGet]
         public async Task<ActionResult<Poll>> GetCurrentPoll([FromRoute, Required] Guid presentation_id)
         {
             if (presentation_id == Guid.Empty)
@@ -22,68 +22,51 @@ namespace Api.Controllers
             var poll = await pollService.GetCurrentPollAsync(presentation_id);
             if (poll == null)
             {
-                return NotFound();
+                return Conflict("There are no polls currently displayed");
             }
+
             return Ok(poll);
         }
 
-        [HttpPut("current")]
-        public async Task<ActionResult<Poll>> SetCurrentPoll([FromRoute, Required] Guid presentation_id, Poll poll)
+        [HttpPut]
+        public async Task<ActionResult<Poll>> SetCurrentPoll([FromRoute, Required] Guid presentation_id)
         {
-            if (poll == null)
-            {
-                throw new ArgumentNullException(nameof(poll));
-            }
             if (presentation_id == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(presentation_id));
             }
             try
             {
-                var updatedPoll = await pollService.SetCurrentPollAsync(presentation_id, poll);
-                if (updatedPoll == null)
+                var presentation = await clientService.GetAsync(presentation_id);
+                if (presentation == null)
                 {
-                    return NotFound();
+                    return NotFound("No presentation found.");
                 }
-                return Ok(updatedPoll);
+
+                var poll = await clientService.GetCurrentAsync(presentation_id);
+                if (poll == null)
+                {
+                    return Conflict("The presentation ran out of polls.");
+                }
+
+                var setPoll = new Poll
+                {
+                    Id = poll.PollId,
+                    PresentationId = presentation_id,
+                    Question = poll.Question
+                };
+
+                var setCurrentPoll = await pollService.SetCurrentPollAsync(presentation_id, setPoll);
+                if (setCurrentPoll == null)
+                {
+                    return NotFound("No presentation found.");
+                }
+                return Ok(setCurrentPoll);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpPost("current/votes")]
-        public async Task<IActionResult> CreateVote([FromRoute, Required] Guid presentation_id, [FromBody] Vote vote)
-        {
-            if (vote == null)
-            {
-                throw new ArgumentNullException(nameof(vote));
-            }
-            if (presentation_id == Guid.Empty)
-            {
-                throw new ArgumentNullException(nameof(presentation_id));
-            }
-            try
-            {
-                await pollService.CreateVoteAsync(presentation_id, vote.PollId, vote);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("{pollId}/votes")]
-        public async Task<ActionResult<IEnumerable<Vote>>> GetVotes([FromRoute, Required] Guid presentation_id, [FromRoute, Required] Guid pollId)
-        {
-            if (presentation_id == Guid.Empty)
-            {
-                throw new ArgumentNullException(nameof(presentation_id));
-            }
-            var votes = await pollService.GetVotesAsync(presentation_id, pollId);
-            return Ok(votes);
         }
     }
 }

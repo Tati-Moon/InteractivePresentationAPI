@@ -1,9 +1,9 @@
-﻿using InteractivePresentation.Domain.Entity;
-using InteractivePresentation.Domain.Repository.Abstract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using InteractivePresentation.Domain.Entity;
+using InteractivePresentation.Domain.Repository.Abstract;
 using Microsoft.EntityFrameworkCore;
 
 namespace InteractivePresentation.Domain.Repository

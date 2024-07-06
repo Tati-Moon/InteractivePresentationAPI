@@ -437,3 +437,5 @@ Please agree with your hiring team regarding the tech stack choice.
 ---
 
 Authored by [Alva Labs](https://www.alvalabs.io/).
+
+Run E2E tests: `npx cypress open`

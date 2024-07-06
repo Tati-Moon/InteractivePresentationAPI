@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using InteractivePresentation.Client.Client;
 using InteractivePresentation.Client.Client.Abstract;
@@ -12,22 +11,17 @@ namespace InteractivePresentation.Client.Service
     public class PresentationClientService(IApiClient apiClient, IOptions<ApplicationSettings> settings)
         : IPresentationClientService
     {
-        private readonly Dictionary<string, string> _headers = new Dictionary<string, string>()
-        {
-            { "Content-Type", "application/json" }
-        };
         private readonly ApplicationSettings _apiSettings = settings.Value;
 
         public async Task<PresentationResponse> GetAsync(Guid presentationId)
         {
             if (presentationId == Guid.Empty)
             {
-                throw new ArgumentNullException("PresentationId is Null");
+                throw new ArgumentNullException("PresentationId is null");
             }
 
             var apiClientRequest = new ApiClientRequest<string>
             {
-                Headers = _headers,
                 Path = $"{_apiSettings.ClientUrl}/presentations/{presentationId}",
             };
 
@@ -35,7 +29,23 @@ namespace InteractivePresentation.Client.Service
             return apiClientResponse?.Data;
         }
 
-        public async Task<PresentationResponse> PostAsync(PresentationRequest request)
+        public async Task<PollResponseModel> GetCurrentAsync(Guid presentationId)
+        {
+            if (presentationId == Guid.Empty)
+            {
+                throw new ArgumentNullException("PresentationId is null");
+            }
+
+            var apiClientRequest = new ApiClientRequest<string>
+            {
+                Path = $"{_apiSettings.ClientUrl}/presentations/{presentationId}/polls/current",
+            };
+
+            var apiClientResponse = await apiClient.GetAsync<PollResponseModel, string>(apiClientRequest);
+            return apiClientResponse?.Data;
+        }
+
+        public async Task<PresentationResponseModel> PostAsync(PresentationRequest request)
         {
             var apiClientRequest = new ApiClientRequest<PresentationRequest>
             {
@@ -43,15 +53,9 @@ namespace InteractivePresentation.Client.Service
                 Query = request
             };
 
-            var apiClientResponse = await apiClient.PostAsync<PresentationResponse, PresentationRequest>(apiClientRequest);
+            var apiClientResponse = await apiClient.PostAsync<PresentationResponseModel, PresentationRequest>(apiClientRequest);
 
-            var presentationId = apiClientResponse?.Data?.PresentationId;
-            if (presentationId != Guid.Empty && presentationId != null)
-            { 
-                return await GetAsync(presentationId.Value);
-            }
-
-            return null;
+            return apiClientResponse?.Data;
         }
     }
 }
